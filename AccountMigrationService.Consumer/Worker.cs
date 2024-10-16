@@ -1,23 +1,33 @@
+using AccountMigrationService.Consumer.RabbitMqHelper.Interface;
+
 namespace AccountMigrationService.Consumer
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly IRabbitMq _rabbitMqConnection;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, IRabbitMq rabbitMqConnection)
         {
             _logger = logger;
+            _rabbitMqConnection = rabbitMqConnection;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
-                await Task.Delay(1000, stoppingToken);
+                _logger.LogInformation($"***********{DateTime.Now} Message:******** START PROCESSING*******");
+                _rabbitMqConnection.listenForMessage();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"*********{DateTime.Now} Message : Process Failed : Message : {ex.Message},\n stack_trace : {ex.StackTrace}, \n Inner Exception : {ex.InnerException}********");
+            }
+            finally
+            {
+                await Task.CompletedTask;
             }
         }
     }

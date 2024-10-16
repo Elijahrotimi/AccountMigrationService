@@ -6,7 +6,7 @@ using AccountMigrationService.Consumer.RabbitMqHelper.Service;
 using AccountMigrationService.Consumer.Utilities;
 using Serilog;
 
-namespace AccountMigrationService
+namespace AccountMigrationService.Consumer
 {
     public class Program
     {
@@ -45,6 +45,4 @@ namespace AccountMigrationService
             host.Run();
         }
     }
-
-
 }

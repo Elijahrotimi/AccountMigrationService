@@ -1,6 +1,9 @@
 ﻿using AccountMigrationService.Producer.DBAccess;
+using AccountMigrationService.Producer.Models;
 using AccountMigrationService.Producer.RabbitMqHelper.Interface;
+using AccountMigrationService.Producer.Utilities;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
@@ -8,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AccountMigrationService.Producer.RabbitMqHelper.Service
 {
@@ -28,7 +32,7 @@ namespace AccountMigrationService.Producer.RabbitMqHelper.Service
         public async Task ProcessAcctRecords(CancellationToken cancellationToken)
         {
             int delayTimeSpan = _configuration.GetValue<int>("RabbitMQ:DelayTimeSpan");
-            //InitRabbitMQ();
+            InitRabbitMQ();
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
@@ -46,8 +50,52 @@ namespace AccountMigrationService.Producer.RabbitMqHelper.Service
 
         private async Task BeginMigrationProcess(CancellationToken cancellationToken)
         {
-            var records = await _accountDetailsRepository.RetrieveAccountRecords();
-            throw new NotImplementedException();
+            try
+            {
+                var records = await _accountDetailsRepository.RetrieveAccountRecords();
+                var recordDetails = await _accountDetailsRepository.RetrieveAccountsInfo(records);
+
+                if (recordDetails.Any())
+                {
+                    Thread.BeginCriticalRegion();
+                    foreach (var item in recordDetails)
+                    {
+                        SendMessageToExchange(item);
+                        _logger.LogInformation($"Sent to NEW_ACCOUNT_TOPIC_EXCHANGE:****{item.account_no}****{item.full_Name}");
+                    }
+                    if (recordDetails.Any())
+                    {
+                        var lastAccountDate = recordDetails.OrderByDescending(r => r.create_date).FirstOrDefault()!.create_date;
+                        TimeStampHandler.UpdateTimeStamp(lastAccountDate);
+                    }
+                    Thread.EndCriticalRegion();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing new account records");
+            }
+        }
+
+        private void SendMessageToExchange<T>(T message)
+        {
+            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+            var routingKey = DetermineRoutingKey(message);
+
+            _channel.BasicPublish(exchange: _configuration.GetValue<string>("RabbitMQ:TopicExchangeName"), routingKey: "", basicProperties: null, body: body);
+            //_channel.BasicPublish(
+            //    exchange: _configuration.GetValue<string>("RabbitMQ:TopicExchangeName"),
+            //    routingKey: routingKey,
+            //    basicProperties: null,
+            //    body: body);
+        }
+        private string DetermineRoutingKey<T>(T message)
+        {
+            if (message is Customer accountDetails)
+            {
+                return string.Format("CUSTOMER.{0}", accountDetails.account_no);
+            }
+            return "default";
         }
 
         private void InitRabbitMQ()

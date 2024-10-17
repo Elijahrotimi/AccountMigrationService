@@ -10,5 +10,6 @@ namespace AccountMigrationService.Producer.DBAccess
     internal interface IAccountDetailsRepository
     {
         Task<List<NewAccountModel>> RetrieveAccountRecords();
+        Task<List<Customer>> RetrieveAccountsInfo(List<NewAccountModel> records);
     }
 }

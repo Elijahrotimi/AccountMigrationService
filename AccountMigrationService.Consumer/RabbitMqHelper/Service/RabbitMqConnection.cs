@@ -21,12 +21,14 @@ namespace AccountMigrationService.Consumer.RabbitMqHelper.Service
         private IModel channel = null;
 
         public RabbitMqConnection(
+            IConsumerService consumerService,
             ILogger<RabbitMqConnection> logger,
-            IOptions<ApplicationSettings> options
+            IOptions<ApplicationSettings> options            
             )
         {
             this._logger = logger;
             _applicationSettings = options.Value;
+            _consumerService = consumerService;
         }
         public void listenForMessage()
         {
@@ -40,13 +42,15 @@ namespace AccountMigrationService.Consumer.RabbitMqHelper.Service
             _connection = factory.CreateConnection();
             channel = _connection.CreateModel();
             channel.BasicQos(0, _applicationSettings.RabbitMq.FetchCount, false);
+            // channel.ExchangeDeclare(_applicationSettings.RabbitMqExchange.ExchangeName, ExchangeType.Topic, durable: _applicationSettings.RabbitMqExchange.Durable);
             channel.QueueDeclare(queue: _applicationSettings.RabbitMqExchange.QueueName, durable: true, exclusive: false, autoDelete: false);
+            //channel.QueueBind(queue: _applicationSettings.RabbitMqExchange.QueueName, _applicationSettings.RabbitMqExchange.ExchangeName, ".NAMS");
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, eventArgs) =>
             {
                 _consumerService.Handle(channel, eventArgs);
             };
-            var consumerTag = channel.BasicConsume(queue: _applicationSettings.RabbitMqExchange.QueueName, autoAck: false, consumer: consumer);
+            var consumerTag = channel.BasicConsume(queue: _applicationSettings.RabbitMqExchange.QueueName, autoAck: true, consumer: consumer);
         }
 
 

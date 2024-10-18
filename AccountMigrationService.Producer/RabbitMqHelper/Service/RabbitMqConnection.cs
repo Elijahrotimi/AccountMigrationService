@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+//using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AccountMigrationService.Producer.RabbitMqHelper.Service
 {
@@ -82,7 +82,7 @@ namespace AccountMigrationService.Producer.RabbitMqHelper.Service
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
             var routingKey = DetermineRoutingKey(message);
 
-            _channel.BasicPublish(exchange: _configuration.GetValue<string>("RabbitMQ:TopicExchangeName"), routingKey: "", basicProperties: null, body: body);
+            _channel.BasicPublish(exchange: _configuration.GetValue<string>("RabbitMQ:FanoutExchangeName"), routingKey: "", basicProperties: null, body: body);
             //_channel.BasicPublish(
             //    exchange: _configuration.GetValue<string>("RabbitMQ:TopicExchangeName"),
             //    routingKey: routingKey,
@@ -104,7 +104,7 @@ namespace AccountMigrationService.Producer.RabbitMqHelper.Service
             try
             {
                 // create channel  
-                _channel.ExchangeDeclare(exchange: _configuration.GetValue<string>("RabbitMQ:TopicExchangeName"), type: ExchangeType.Fanout, durable: false);
+                _channel.ExchangeDeclare(exchange: _configuration.GetValue<string>("RabbitMQ:FanoutExchangeName"), type: ExchangeType.Fanout, durable: false);
                 //_channel.ExchangeDeclare(exchange: _configuration.GetValue<string>("RabbitMQ:TopicExchangeName"), type: ExchangeType.Topic, durable: false);
             }
             catch (Exception ex)

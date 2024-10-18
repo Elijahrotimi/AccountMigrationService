@@ -1,6 +1,7 @@
 using AccountMigrationService.Consumer;
 using AccountMigrationService.Consumer.Consumer.Interface;
 using AccountMigrationService.Consumer.Consumer.Service;
+using AccountMigrationService.Consumer.DBAccess;
 using AccountMigrationService.Consumer.RabbitMqHelper.Interface;
 using AccountMigrationService.Consumer.RabbitMqHelper.Service;
 using AccountMigrationService.Consumer.Utilities;
@@ -37,6 +38,7 @@ namespace AccountMigrationService.Consumer
                 {
                     services.Configure<ApplicationSettings>(hostContext.Configuration.GetSection(nameof(ApplicationSettings)));
                     services.AddSingleton<IConsumerService, ConsumerService>();
+                    services.AddSingleton<IDbUpdateRepository, DbUpdateRepository>();
                     services.AddSingleton<IRabbitMq, RabbitMqConnection>();
                     services.AddHostedService<Worker>();
                     services.AddMemoryCache();

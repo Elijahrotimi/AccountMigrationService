@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AccountMigrationService.Consumer.Consumer.Interface
 {
-    internal interface IConsumerService
+    public interface IConsumerService
     {
         void Handle(IModel context, BasicDeliverEventArgs args);
     }

@@ -53,22 +53,24 @@ namespace AccountMigrationService.Producer.RabbitMqHelper.Service
             try
             {
                 var records = await _accountDetailsRepository.RetrieveAccountRecords();
-                var recordDetails = await _accountDetailsRepository.RetrieveAccountsInfo(records);
-
-                if (recordDetails.Any())
+                if (records.Any())
                 {
-                    Thread.BeginCriticalRegion();
-                    foreach (var item in recordDetails)
-                    {
-                        SendMessageToExchange(item);
-                        _logger.LogInformation($"Sent to NEW_ACCOUNT_TOPIC_EXCHANGE:****{item.account_no}****{item.full_Name}");
-                    }
-                    if (recordDetails.Any())
-                    {
-                        var lastAccountDate = recordDetails.OrderByDescending(r => r.create_date).FirstOrDefault()!.create_date;
+                    //var recordDetails = await _accountDetailsRepository.RetrieveAccountsInfo(records);
+
+                    //if (recordDetails.Any())
+                    //{
+                        Thread.BeginCriticalRegion();
+                        foreach (var item in records)
+                        {
+                            SendMessageToExchange(item);
+                            _logger.LogInformation($"Sent to NEW_ACCOUNT_FANOUT_EXCHANGE:****{item.account_no}****{item.create_date}");
+                        }
+
+                        //Update date stamp
+                        var lastAccountDate = records.OrderByDescending(r => DateTime.Parse(r.create_date)).FirstOrDefault()!.create_date;
                         TimeStampHandler.UpdateTimeStamp(lastAccountDate);
-                    }
-                    Thread.EndCriticalRegion();
+                        Thread.EndCriticalRegion();
+                    //}
                 }
             }
             catch (Exception ex)

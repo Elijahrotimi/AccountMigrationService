@@ -27,6 +27,7 @@ namespace AccountMigrationService.Consumer.Models
         public object designation { get; set; }
         public string maritalStatus { get; set; }
         public string state { get; set; }
+        public string city { get; set; }
         public string allowDebit { get; set; }
         public string allowCredit { get; set; }
         public string allowBlock { get; set; }
@@ -37,6 +38,7 @@ namespace AccountMigrationService.Consumer.Models
         public string dormant { get; set; }
         public string taxIdNumber { get; set; }
         public string bvn { get; set; }
+        public string nin { get; set; }
         public string accountOpenDate { get; set; }
         public string currentBalance { get; set; }
         public string availableBalance { get; set; }

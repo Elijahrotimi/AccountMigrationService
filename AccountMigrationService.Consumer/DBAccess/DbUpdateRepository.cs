@@ -16,6 +16,7 @@ namespace AccountMigrationService.Consumer.DBAccess
         }
         public async Task<string> UpdateCustomerRecord(CustomerModel customer)
         {
+            string response = string.Empty;
             string connectionstring = _configuration.GetConnectionString("ZenbaseConnectionString")!;
             using AseConnection connection = new AseConnection(connectionstring);
             try
@@ -46,22 +47,25 @@ namespace AccountMigrationService.Consumer.DBAccess
                     command.Parameters.AddWithValue("@psMailingAddress",        customer.address1);
                     command.Parameters.AddWithValue("@psAccountHolderType",     customer.customer_Type);
                     command.Parameters.AddWithValue("@psAccountName",           customer.short_Name);
+                    command.Parameters.AddWithValue("@psBvn",                   customer.bvn);
+                    command.Parameters.AddWithValue("@psNin",                   customer.nin);
+                    command.Parameters.AddWithValue("@psCity",                  string.Empty);
+                    command.Parameters.AddWithValue("@psState",                 customer.state);
 
                     connection.Open();
                     await command.ExecuteReaderAsync();
-                    //var rErrorCode = int.Parse(command.Parameters["@rErrorCode"].Value.ToString()!);
-                    var rErrorMsg = command.Parameters["@rErrorMsg"].Value.ToString();
+
+                    response = "Success";
 
                     command.Dispose();
                     connection.Close();
 
-                    return rErrorMsg;
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"An error occured :{ex.Message}");
-                return ex.Message;
+                response = ex.Message;
             }
             finally
             {
@@ -70,7 +74,7 @@ namespace AccountMigrationService.Consumer.DBAccess
                     connection.Close();
                 }
             }
-            return null;
+            return response;
         }
     }
 }

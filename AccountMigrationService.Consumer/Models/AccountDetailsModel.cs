@@ -42,5 +42,7 @@ namespace AccountMigrationService.Consumer.Models
         public string ACY_WITHDRAWABLE_BAL { get; set; }
         public string AC_STAT_DORMANT { get; set; }
         public string BVN { get; set; }
+        public string NIN { get; set; }
+        public string STATE_OF_ORIGIN { get; set; }
     }
 }

@@ -68,7 +68,7 @@ namespace AccountMigrationService.Consumer.Consumer.Service
             try
             {
                 var account_details = await _accountDetailsRepository.RetrieveAccountsInfo(model.account_no);
-                if (account_details != null)
+                if (account_details.account_no != null)
                 {
                     await _updateRepository.UpdateCustomerRecord(account_details);
                 }

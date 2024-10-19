@@ -76,6 +76,9 @@ namespace AccountMigrationService.Consumer.DBAccess
                 dateOfBirth = !string.IsNullOrEmpty(accountDetailsModel.DATE_OF_BIRTH.ToString()) ? accountDetailsModel.DATE_OF_BIRTH.ToString() : DateTime.Now.ToString(),
                 accountOpenDate = !string.IsNullOrEmpty(accountDetailsModel.AC_OPEN_DATE.ToString()) ? accountDetailsModel.AC_OPEN_DATE.ToString() : DateTime.Now.ToString(),
                 customer_Type = !string.IsNullOrEmpty(accountDetailsModel.CUSTOMER_TYPE) ? accountDetailsModel.CUSTOMER_TYPE : string.Empty,
+                bvn = !string.IsNullOrEmpty(accountDetailsModel.BVN) ? accountDetailsModel.BVN : string.Empty,
+                nin = !string.IsNullOrEmpty(accountDetailsModel.NIN) ? accountDetailsModel.NIN : string.Empty,
+                state = !string.IsNullOrEmpty(accountDetailsModel.STATE_OF_ORIGIN) ? accountDetailsModel.STATE_OF_ORIGIN : string.Empty,
                 status = GetFlexCubeAccountStatus(accountDetailsModel)
             };
 

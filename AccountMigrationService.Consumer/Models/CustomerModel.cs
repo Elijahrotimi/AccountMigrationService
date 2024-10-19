@@ -12,7 +12,7 @@ namespace AccountMigrationService.Consumer.Models
         public string create_date { get; set; }
         public string branch_Code { get; set; }
         public string account_type { get; set; }
-        public string minor { get; set; }
+        public string status { get; set; }
         public string firstName { get; set; }
         public string middleName { get; set; }
         public string lastName { get; set; }
@@ -53,5 +53,6 @@ namespace AccountMigrationService.Consumer.Models
         public string email { get; set; }
         public string nationality { get; set; }
         public string customer_Name1 { get; set; }
+        public string mothersMaidenName { get; set; }
     }
 }

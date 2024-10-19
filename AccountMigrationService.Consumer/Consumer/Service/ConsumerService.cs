@@ -17,13 +17,15 @@ namespace AccountMigrationService.Consumer.Consumer.Service
         private int ProceesedJson = 0;
         private readonly ILogger<ConsumerService> _logger;
         private readonly IDbUpdateRepository _updateRepository;
+        private readonly IAccountDetailsRepository _accountDetailsRepository;
         private readonly ApplicationSettings _applicationSettings;
 
         public ConsumerService(ILogger<ConsumerService> logger,
-            IOptions<ApplicationSettings> appSettings, IDbUpdateRepository updateRepository)
+            IOptions<ApplicationSettings> appSettings, IDbUpdateRepository updateRepository, IAccountDetailsRepository accountDetailsRepository)
         {
             _logger = logger;
             _updateRepository = updateRepository;
+            _accountDetailsRepository = accountDetailsRepository;
             _applicationSettings = appSettings.Value;
         }
         public void Handle(IModel context, BasicDeliverEventArgs eventArgs)
@@ -35,7 +37,7 @@ namespace AccountMigrationService.Consumer.Consumer.Service
                 message = Encoding.UTF8.GetString(body);
                 if (IsValidJson(message))
                 {
-                    CustomerModel model = JsonConvert.DeserializeObject<CustomerModel>(message)!;
+                    NewAccountModel model = JsonConvert.DeserializeObject<NewAccountModel>(message)!;
                     if (model != null)
                     {
                         _ = PerformTask(model);
@@ -61,11 +63,15 @@ namespace AccountMigrationService.Consumer.Consumer.Service
             }
         }
 
-        private async Task PerformTask(CustomerModel model)
+        private async Task PerformTask(NewAccountModel model)
         {
             try
             {
-                await _updateRepository.UpdateCustomerRecord(model);
+                var account_details = await _accountDetailsRepository.RetrieveAccountsInfo(model.account_no);
+                if (account_details != null)
+                {
+                    await _updateRepository.UpdateCustomerRecord(account_details);
+                }
             }
             catch (Exception ex)
             {

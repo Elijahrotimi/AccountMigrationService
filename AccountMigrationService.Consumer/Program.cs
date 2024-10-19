@@ -37,6 +37,7 @@ namespace AccountMigrationService.Consumer
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.Configure<ApplicationSettings>(hostContext.Configuration.GetSection(nameof(ApplicationSettings)));
+                    services.AddSingleton<IAccountDetailsRepository, AccountDetailsRepository>();
                     services.AddSingleton<IConsumerService, ConsumerService>();
                     services.AddSingleton<IDbUpdateRepository, DbUpdateRepository>();
                     services.AddSingleton<IRabbitMq, RabbitMqConnection>();

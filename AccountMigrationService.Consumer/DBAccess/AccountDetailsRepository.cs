@@ -45,7 +45,7 @@ namespace AccountMigrationService.Consumer.DBAccess
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving account records");
+                _logger.LogError(ex, $"An error occurred while retrieving account records for account number {accountNo}");
                 return response;
             }
             return response;

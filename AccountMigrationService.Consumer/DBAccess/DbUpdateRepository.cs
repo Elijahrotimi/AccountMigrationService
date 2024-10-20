@@ -54,7 +54,7 @@ namespace AccountMigrationService.Consumer.DBAccess
 
                     connection.Open();
                     await command.ExecuteReaderAsync();
-
+                    _logger.LogInformation($"Account details update successful for account number: {customer.account_no}");
                     response = "Success";
 
                     command.Dispose();

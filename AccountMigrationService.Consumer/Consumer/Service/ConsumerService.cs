@@ -55,10 +55,11 @@ namespace AccountMigrationService.Consumer.Consumer.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error while processing" + ex.Message);
+                _logger.LogError("Error while processing: " + ex.Message);
                 if (String.IsNullOrWhiteSpace(message))
                 {
                     _logger.LogError(message);
+                    context.BasicNack(deliveryTag: eventArgs.DeliveryTag, multiple: false, requeue: true);
                 }
             }
         }

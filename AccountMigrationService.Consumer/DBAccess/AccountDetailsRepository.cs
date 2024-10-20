@@ -21,7 +21,7 @@ namespace AccountMigrationService.Consumer.DBAccess
         }
         public async Task<CustomerModel> RetrieveAccountsInfo(string accountNo)
         {
-            _logger.LogInformation("Begin Retrieve account records...");
+            _logger.LogInformation($"Begin Retrieve account records for account number {accountNo}");
             var response = new CustomerModel();
             try
             {

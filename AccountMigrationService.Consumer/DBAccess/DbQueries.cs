@@ -46,14 +46,7 @@ namespace AccountMigrationService.Consumer.DBAccess
         {
             var query = @"SELECT 
                 b.Branch_Code,
-	                CASE b.ACCOUNT_TYPE
-	                WHEN 'N' THEN 'Nostro'
-	                WHEN 'D' THEN 'Misc Dr'
-	                WHEN 'C' THEN 'Misc Cr'
-	                WHEN 'S' THEN 'Savings'
-	                WHEN 'U' THEN 'Current'
-	                WHEN 'Y' THEN 'Deposit'
-	                END AS ACCOUNT_TYPE,
+	            b.ACCOUNT_TYPE,
                 b.AC_DESC,
                 b.CUST_NO,
                 b.CCY,

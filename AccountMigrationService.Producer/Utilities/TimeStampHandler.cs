@@ -11,8 +11,9 @@ namespace AccountMigrationService.Producer.Utilities
     {
         public static void UpdateTimeStamp(string timeStamp)
         {
+            string baseDir = AppContext.BaseDirectory;
 
-            string filePath = "timestamp.json";
+            string filePath = $"{baseDir}\\timestamp.json";
 
             JObject jsonObj;
             if (File.Exists(filePath))
@@ -33,7 +34,9 @@ namespace AccountMigrationService.Producer.Utilities
 
         public static string GetTimeStamp()
         {
-            string filePath = "timestamp.json";
+            string baseDir = AppContext.BaseDirectory;
+
+            string filePath = $"{baseDir}\\timestamp.json";
 
             var json = File.ReadAllText(filePath);
 

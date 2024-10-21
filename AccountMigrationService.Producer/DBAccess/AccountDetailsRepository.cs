@@ -26,6 +26,8 @@ namespace AccountMigrationService.Producer.DBAccess
                 string flexcubeConn = _config.GetConnectionString("FlexcubeDbConnectionString")!;
                 string lastDate = TimeStampHandler.GetTimeStamp();
 
+                _logger.LogInformation($"Last updated timestamp retrieved - {lastDate}");
+
                 string query = DbQueries.GET_NEWLY_OPENED_ACCOUNTS();
 
                 var db = new OracleDataAccess();
@@ -35,6 +37,7 @@ namespace AccountMigrationService.Producer.DBAccess
                 IEnumerable<NewAccountModel> result = await db.LoadDataWithQuery<NewAccountModel, dynamic>(query, parameters, flexcubeConn);
 
                 response = result.ToList();
+                _logger.LogInformation($"Number of new account records retrieved from flexcube - {response.Count}");
 
 
             }

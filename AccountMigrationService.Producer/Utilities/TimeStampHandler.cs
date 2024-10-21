@@ -12,7 +12,7 @@ namespace AccountMigrationService.Producer.Utilities
         public static void UpdateTimeStamp(string timeStamp)
         {
 
-            string filePath = "Utilities\\timestamp.json";
+            string filePath = "timestamp.json";
 
             JObject jsonObj;
             if (File.Exists(filePath))
@@ -33,7 +33,7 @@ namespace AccountMigrationService.Producer.Utilities
 
         public static string GetTimeStamp()
         {
-            string filePath = "Utilities\\timestamp.json";
+            string filePath = "timestamp.json";
 
             var json = File.ReadAllText(filePath);
 

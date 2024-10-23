@@ -40,18 +40,29 @@ namespace AccountMigrationService.Consumer.Consumer.Service
                     NewAccountModel model = JsonConvert.DeserializeObject<NewAccountModel>(message)!;
                     if (model != null)
                     {
-                        _ = PerformTask(model);
+                        string resp = PerformTask(model).Result;
+                        if (resp != null && resp == "Success")
+                        {
+                            context.BasicAck(eventArgs.DeliveryTag, false);
+                        }
+                        else
+                        {
+                            _logger.LogInformation($"Error update records to phoenix - {resp}");
+                            context.BasicNack(deliveryTag: eventArgs.DeliveryTag, multiple: false, requeue: true);
+                        }
                     }
                     else
                     {
                         _logger.LogInformation($"Error parsing  {message} into CustomerModel");
+                        context.BasicAck(eventArgs.DeliveryTag, false);
                     }
                 }
                 else
                 {
                     _logger.LogInformation($" {message}");
+                    context.BasicAck(eventArgs.DeliveryTag, false);
                 }
-                context.BasicAck(eventArgs.DeliveryTag, false);
+                //context.BasicAck(eventArgs.DeliveryTag, false);
             }
             catch (Exception ex)
             {
@@ -61,23 +72,26 @@ namespace AccountMigrationService.Consumer.Consumer.Service
                     _logger.LogError(message);
                     context.BasicNack(deliveryTag: eventArgs.DeliveryTag, multiple: false, requeue: true);
                 }
+                context.BasicNack(deliveryTag: eventArgs.DeliveryTag, multiple: false, requeue: true);
             }
         }
 
-        private async Task PerformTask(NewAccountModel model)
+        private async Task<string> PerformTask(NewAccountModel model)
         {
+            string response = string.Empty;
             try
             {
                 var account_details = await _accountDetailsRepository.RetrieveAccountsInfo(model.account_no);
                 if (account_details.account_no != null)
                 {
-                    await _updateRepository.UpdateCustomerRecord(account_details);
+                    response = await _updateRepository.UpdateCustomerRecord(account_details);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"An error occured Processing AccountNumber {model.account_no} for transaction with reference with error: {ex.Message}");
             }
+            return response;
 
         }
         private bool IsValidJson(string jsonString)

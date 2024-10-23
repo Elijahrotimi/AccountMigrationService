@@ -69,6 +69,7 @@ namespace AccountMigrationService.Producer.RabbitMqHelper.Service
                         //Update date stamp
                         var lastAccountDate = records.OrderByDescending(r => DateTime.Parse(r.create_date)).FirstOrDefault()!.create_date;
                         TimeStampHandler.UpdateTimeStamp(lastAccountDate);
+                        _logger.LogInformation($"Timestamp updated to - {lastAccountDate}");
                         Thread.EndCriticalRegion();
                     //}
                 }

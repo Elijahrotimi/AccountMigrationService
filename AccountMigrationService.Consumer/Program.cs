@@ -27,7 +27,7 @@ namespace AccountMigrationService.Consumer
                         //.WriteTo.Console()
                         .WriteTo.File(
                             path: logFilePath, //"Logs/AccountMigrationService-.txt",
-                            rollingInterval: RollingInterval.Hour,
+                            rollingInterval: RollingInterval.Day,
                             rollOnFileSizeLimit: true
                         )
                         .CreateLogger();

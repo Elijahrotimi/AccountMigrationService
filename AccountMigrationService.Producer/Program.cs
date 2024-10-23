@@ -26,7 +26,7 @@ public class Program
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Information()
                     //.WriteTo.Console()
-                    .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Hour, rollOnFileSizeLimit: true)
+                    .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
                     .CreateLogger();
             })
             .UseSerilog()
